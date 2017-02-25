@@ -1,19 +1,20 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:p="http://primefaces.org/ui"
-      xmlns:h="http://java.sun.com/jsf/html">
-
-    <h:head>
-        <title>Kişi İşlemleri</title>
-    </h:head>
-    <h:body>
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui" 
+	xmlns:b="http://bootsfaces.net/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+	<ui:composition template="/layout/layout.xhtml">
+		<ui:define name="content">
     	<h2>Kişi İşlemleri</h2>
-    	<h:form>
+    	<h:form id="frmKisi">
+    	
+    	<p:growl life="6000" autoUpdate="true" id="growl" showDetail="true" />  
 
-		<p:dataTable var="k" value="#{kisiBean.kisiler}" rows="10"
+		<p:dataTable id="tblKisi" widgetVar="tblKisi" var="k" value="#{kisiBean.kisiler}" rows="10"
                          paginator="true"
                          paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                          rowsPerPageTemplate="5,10,15">
@@ -48,9 +49,21 @@
         <p:column headerText="Adres">
             <h:outputText value="#{k.acikAdres}" />
         </p:column>
+        
+        <p:column headerText="İşlemler">
+            <p:commandButton icon="ui-icon-pencil" update=":frmKisi:dlgKisi" actionListener="#{kisiBean.seciliKayit(k.id)}" oncomplete="PF('dlgKisi').show()"></p:commandButton>
+            <p:commandButton icon="ui-icon-trash" actionListener="#{kisiBean.seciliyiSil(k.id)}" update=":frmKisi:tblKisi">
+            	<p:confirm header="Silme Onay" message="Emin misiniz?" icon="ui-icon-alert" />
+            </p:commandButton>
+            
+         	<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+		        <p:commandButton value="Evet" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+		        <p:commandButton value="Hayır" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+		    </p:confirmDialog>
+        </p:column>
     </p:dataTable>
     
-    <p:commandButton value="Dialog Aç" onclick="PF('dlgKisi').show()"></p:commandButton>
+    <p:commandButton value="Yeni" actionListener="#{kisiBean.yeni}" update=":frmKisi:dlgKisi" oncomplete="PF('dlgKisi').show()"></p:commandButton>
     
     <p:dialog id="dlgKisi" widgetVar="dlgKisi" width="400" resizable="false" header="Kişi Kaydet" modal="true">
     
@@ -74,11 +87,12 @@
 			<p:inputText value="#{kisiBean.kisi.acikAdres}"></p:inputText>
 			
 			<p:commandButton value="İptal" onclick="PF('dlgKisi').hide()"></p:commandButton>
-			<p:commandButton value="Kaydet" actionListener="#{kisiBean.kaydet}" oncomplete="PF('dlgKisi').hide()"></p:commandButton>
+			<p:commandButton value="Kaydet" actionListener="#{kisiBean.kaydet}" update=":frmKisi:tblKisi,:frmKisi:dlgKisi" oncomplete="PF('dlgKisi').hide()"></p:commandButton>
 		</p:panelGrid>
 
     </p:dialog>
 
     	</h:form>
-    </h:body>
-</html>
+		</ui:define>
+	</ui:composition>
+</ui:composition>
